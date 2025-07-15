@@ -47,11 +47,48 @@ pip install -r requirements.txt
 Create a .env file in the root folder:
 
 ```bash
-env
 OPENAI_API_KEY=your_openai_key
 REDDIT_CLIENT_ID=your_reddit_client_id
 REDDIT_CLIENT_SECRET=your_reddit_client_secret
 REDDIT_USER_AGENT=redpersona-agent
 ```
 
+## ▶️ Running the App
+```bash
+streamlit run app.py
+```
+Then visit [http://localhost:8501] in your browser.
 
+
+## 🧪 Sample Input & Output
+### ✅ Input
+```bash
+https://www.reddit.com/user/Kojied/
+```
+
+### 🧠 Output
+```bash
+**Name:** Kojied  
+**Age Range:** 25–35  
+**Archetype:** The Creator  
+**Motivations:** Staying up-to-date with tech, personal development  
+**Personality Traits:** INTJ, analytical, independent  
+**Summary Quote:** "Am I not the same as they are, just at a longer time horizon?"  
+...
+```
+
+## 📁 Project Structure
+```bash
+/
+├── app.py             # Streamlit UI
+├── main.py         # Reddit + GPT persona logic
+├── .env.example       # Template for env vars
+├── requirements.txt   # Python dependencies
+└── README.md          # Project documentation
+```
+
+## ✅ TODO / Future Ideas
+- PDF persona export
+- Visual persona cards
+- Batch analysis for multiple users
+- Export to JSON / Markdown
