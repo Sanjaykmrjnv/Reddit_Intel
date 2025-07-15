@@ -25,7 +25,7 @@ def extract_username(profile_url: str):
 
 
 # Getting Comments and Posts from a Reddit User
-def fetch_user_activity(username: str, limit: int = 100):
+def fetch_user_activity(username: str, limit: int = 50):
     try:
         user = reddit.redditor(username)
         posts = [f"[Post] {s.title}\n{s.selftext}" for s in user.submissions.new(limit=limit)]
@@ -81,7 +81,7 @@ def generate_persona(profile_url: str):
         return {"error": "No data found or user may be private."}
 
     chunks = chunk_text(activity)
-    persona_parts = []
+    partial_personas = []
 
     for chunk in chunks:
         prompt = build_persona_prompt(chunk, profile_url)
@@ -94,12 +94,45 @@ def generate_persona(profile_url: str):
             temperature=0.7,
             max_tokens=1500
         )
-        persona_parts.append(response.choices[0].message.content.strip())
+        partial_personas.append(response.choices[0].message.content.strip())
 
-    combined = "\n\n---\n\n".join(persona_parts)
-    print("Combined Persona:----->",combined)
+    merge_prompt = f"""
+    You are a senior UX researcher.
+
+    You have multiple partial analyses of a Reddit user's activity. Merge and refine them into **one final, cohesive user persona**.
+
+    Keep these sections:
+    - Name
+    - Age Range
+    - Occupation
+    - Status
+    - Location
+    - Archetype
+    - Motivations
+    - Personality Traits
+    - Behavior & Habits
+    - Frustrations
+    - Goals & Needs
+    - Summary Quote
+    - Citations
+
+    Here are the partial persona fragments:
+    {chr(10).join(partial_personas)}
+    """
+
+    final_response = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=[
+            {"role": "system", "content": "You combine persona fragments into a cohesive UX profile."},
+            {"role": "user", "content": merge_prompt}
+        ],
+        temperature=0.5,
+        max_tokens=1800
+    )
+
+    combined_persona = final_response.choices[0].message.content.strip()
+    print("Final Persona:------>", combined_persona)
     return {
         "username": username,
-        "raw_text": combined,
-        "parsed": persona_parts[0]  
+        "raw_text": combined_persona,
     }
