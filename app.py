@@ -11,12 +11,14 @@ profile_url = st.text_input("🔗 Enter Reddit Profile URL")
 if profile_url:
     with st.spinner("Analyzing Reddit profile..."):
         result = generate_persona(profile_url)
+        print("Result:", result)
     
     if "error" in result:
         st.error(result["error"])
     else:
         raw_output = result["raw_text"]
         st.subheader("👤 Generated Persona")
-        st.markdown(raw_output)  # ✅ Display raw markdown text
+        st.image(result.get("profile_image", "No image available"), width=100)
+        st.markdown(raw_output)
         st.download_button("📥 Download Persona", raw_output, file_name=f"{result['username']}_persona.txt")
         st.success("Persona generated successfully!")

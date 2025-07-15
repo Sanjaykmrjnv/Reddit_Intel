@@ -73,9 +73,11 @@ Activity:
 {textwrap.shorten(user_text, width=8000)}
 """
 
+
 def generate_persona(profile_url: str):
     username = extract_username(profile_url)
     activity = fetch_user_activity(username)
+    profile_image = reddit.redditor(username).icon_img if reddit.redditor(username).icon_img else "No image available"
 
     if not activity:
         return {"error": "No data found or user may be private."}
@@ -131,8 +133,8 @@ def generate_persona(profile_url: str):
     )
 
     combined_persona = final_response.choices[0].message.content.strip()
-    print("Final Persona:------>", combined_persona)
     return {
         "username": username,
         "raw_text": combined_persona,
+        "profile_image": profile_image
     }
